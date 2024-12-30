@@ -13,12 +13,14 @@ void AA_SpawnTarget::BuildRandomSequence(int low, int high, TArray<int>& RandomA
 		high = tmp;
 	}
 	//TArray<int> RandomArray;
-	RandomArray.Init(0, high - low + 1);
+	int mArraySize = high - low + 1;
+	RandomArray.Init(0, mArraySize);
 	for (int i = low; i <= high; i++) {
 		RandomArray[i - low] = i;
 	}
-	for (int i = RandomArray.Num() - 1; i > 0; i--) {
-		x = FMath::RandRange(0, i + 1);
+	//随机地打乱这mArraySize个数的顺序
+	for (int i = mArraySize - 1; i > 0; i--) {
+		x = FMath::RandRange(0, i);
 		tmp = RandomArray[i];
 		RandomArray[i] = RandomArray[x];
 		RandomArray[x] = tmp;
@@ -70,13 +72,27 @@ void AA_SpawnTarget::BeginPlay()
 			AA_Target* tmp=Cast<AA_Target>(A_Spawned_Actor);
 			E_TargetTag tmpTag = E_TargetTag::NORMALTARGET;
 			//bool B_ShouldBeImportant = false;
+			// 
+			//Numbers[0]---numbers[SpawnImportantCount-1]是 Important target
 			for (int j = 0; j < int(SpawnImportantCount); j++) {
+
 				if (Numbers[j]==i) {
 					//B_ShouldBeImportant = true;
 					tmpTag = E_TargetTag::IMPORTANTTARGET_1;
 					break;
 				}
 			}
+			//numbers[SpawnImportantCount]-----numbers[SpawnImportantCount+SpawnWrongCount-1]是 wrong target
+			if (tmpTag == E_TargetTag::NORMALTARGET) {
+				for (int j = SpawnImportantCount; j < int(SpawnWrongCount + SpawnWrongCount); j++) {
+					if (Numbers[j] == i) {
+						//B_ShouldBeImportant = true;
+						tmpTag = E_TargetTag::WRONGTARGET;
+						break;
+					}
+				}
+			}
+
 			tmp->ChangeTag(tmpTag);
 		}
 		//GetWorld()->SpawnActorDeferred<AA_Target>(A_Target, tmpTransForm,

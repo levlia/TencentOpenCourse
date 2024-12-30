@@ -49,10 +49,32 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void Reload();//»»µ¯
+
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	int GetCurBulletCount() {
+		return BulletCount;
+	}
+	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	int GetTotalBulletCount() {
+		return TotalBulletCount;
+	}
+
+
 protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+
+	UPROPERTY(VisibleAnywhere, Category = WeaponProperty)
+	int BulletCount = 30;
+
+	UPROPERTY(VisibleAnywhere, Category = WeaponProperty)
+	int TotalBulletCount = 30;//µ¯¼ÐÈÝÁ¿
 
 private:
 	/** The Character holding this weapon*/

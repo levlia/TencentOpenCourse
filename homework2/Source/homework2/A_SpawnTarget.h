@@ -25,7 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "SpawnParam|count")
 	unsigned int SpawnCount = 2;
 	UPROPERTY(EditAnywhere, Category = "SpawnParam|count")
-	unsigned int SpawnImportantCount = 2;
+	unsigned int SpawnImportantCount = 0;
+	UPROPERTY(EditAnywhere, Category = "SpawnParam|count")
+	unsigned int SpawnWrongCount = 0;
 
 	//generate random serial numbers length is high-low+1
 	void BuildRandomSequence(int low, int high, TArray<int>& RandomArray);

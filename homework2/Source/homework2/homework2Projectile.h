@@ -33,6 +33,10 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	//触发击中事件，作为静态事件让关卡蓝图检测调用，或者在多人游戏时让其他人调用
+	UFUNCTION(BlueprintImplementableEvent, Category = "StaticEvent")
+	void FuncBulletShotBPEvent();
+
 	/** Returns CollisionComp subobject **/
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	/** Returns ProjectileMovement subobject **/

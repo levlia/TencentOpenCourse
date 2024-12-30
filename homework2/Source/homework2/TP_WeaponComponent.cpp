@@ -23,7 +23,7 @@ UTP_WeaponComponent::UTP_WeaponComponent()
 
 void UTP_WeaponComponent::Fire()
 {
-	if (Character == nullptr || Character->GetController() == nullptr)
+	if (Character == nullptr || Character->GetController() == nullptr || BulletCount <= 0)
 	{
 		return;
 	}
@@ -46,7 +46,11 @@ void UTP_WeaponComponent::Fire()
 			ActorSpawnParams.Owner = this->GetOwner();//owner of this bullet is owner of this gun
 			// Spawn the projectile at the muzzle
 			Ahomework2Projectile* Bullet = World->SpawnActor<Ahomework2Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-			Bullet->AssignMater(Character);
+			if (Bullet) {
+				//Bullet的spawn可能会失败
+				Bullet->AssignMater(Character);
+				BulletCount--;
+			}
 		}
 	}
 	
@@ -66,6 +70,12 @@ void UTP_WeaponComponent::Fire()
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
+}
+
+void UTP_WeaponComponent::Reload()
+{
+	//triger by blueprint defined input
+	BulletCount = TotalBulletCount;
 }
 
 bool UTP_WeaponComponent::AttachWeapon(Ahomework2Character* TargetCharacter)

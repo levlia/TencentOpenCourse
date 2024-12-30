@@ -34,7 +34,7 @@ Ahomework2Projectile::Ahomework2Projectile()
 void Ahomework2Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) ) //&& OtherComp->IsSimulatingPhysics()
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 		if (OtherComp->GetOwner()->GetClass()->IsChildOf(AA_Target::StaticClass())) {
@@ -44,7 +44,13 @@ void Ahomework2Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 			if (A_ThisTarget->Target_TAG == E_TargetTag::IMPORTANTTARGET_1) {
 				times = 2;
 			}
-			Character->GotScore(times);
+			if (A_ThisTarget->Target_TAG == E_TargetTag::WRONGTARGET) {
+				Character->PlayerTakeDamage(10);
+			}
+			else {
+				Character->GotScore(times);
+			}
+			FuncBulletShotBPEvent();
 
 			float ScaleSize = Character->F_HitScale_Y;
 

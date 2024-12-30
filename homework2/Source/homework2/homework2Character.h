@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 
+#include "TP_WeaponComponent.h"
+
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "Logging/LogMacros.h"
@@ -53,7 +55,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
-
+	UFUNCTION(BlueprintImplementableEvent, Category = "StaticEvent")
+	void FuncGotAttackBPEvent();
 	
 protected:
 	/** Called for movement input */
@@ -71,11 +74,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	float Score = 0;
 
-
+	UPROPERTY(VisibleAnywhere, Category = Property)
+	float  HP= 100;
 
 	/** 响应要更新的武器状态、得分(生命值)。修改后，立即在服务器上调用，并在客户端上调用以响应RepNotify*/
 	void OnWeaponUpdate();
-	void OnScoreUpdate();
+	//void OnScoreUpdate();
 
 	// End of APawn interface
 
@@ -85,6 +89,20 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	//UFUNCTION(BlueprintCallable, Category = "GameInfo")
+	bool PlayerTakeDamage(float damage) {
+		if ((HP - damage) >= 0) {
+			HP -= damage;
+			FuncGotAttackBPEvent();
+			return true;
+		}
+		return false;
+	}
+
+
+	//自定义简易Player的状态 0:game not started 1:game started 2:game end
+	UPROPERTY(EditAnywhere, Category = State)
+	int SimplePlayerState = 0;
 
 	UPROPERTY(EditAnywhere, Category = Input)
 	float F_ScoreAdder_X = 2;
@@ -102,6 +120,20 @@ public:
 		return Score;
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "PlayerInfo")
+	int GetSimplePlayerState() {
+		return SimplePlayerState;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerInfo")
+	bool SetSimplePlayerState(int i) {
+		if (i >= 0 && i <= 2) {
+			SimplePlayerState = i;
+			return true;
+		}
+		return false;
+	}
+
 	UFUNCTION(BlueprintCallable, Category = "GameInfo")
 	float GetLeftTime() {
 		return GameTime;
@@ -117,6 +149,13 @@ public:
 		return F_HitScale_Y;
 	}
 
+	UFUNCTION(BlueprintCallable, Category = "GameInfo")
+	float GetHP() {
+		return HP;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "WeponInfo")
+	bool GetWeaponInfor(int weaponIndex, int& LeftBulletCount, int& TotalBulletCount);
 	//UFUNCTION(BlueprintCallable, Category = "MapInfo")
 	//int GetTotalScore() {
 	//	return TotalScore;

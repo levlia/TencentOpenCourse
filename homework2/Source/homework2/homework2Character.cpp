@@ -62,7 +62,10 @@ void Ahomework2Character::Tick(float DeltaSeconds)
 		i++;
 	}
 	
-	GameTime -= DeltaSeconds;
+	if (SimplePlayerState == 1) {
+		GameTime -= DeltaSeconds;
+		//TakeDamage(DeltaSeconds);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -119,6 +122,36 @@ void Ahomework2Character::OnWeaponUpdate()
 void Ahomework2Character::GotScore(unsigned int Times)
 {
 	Score += F_ScoreAdder_X * Times;
+}
+
+bool Ahomework2Character::GetWeaponInfor(int weaponIndex, int& LeftBulletCount, int& TotalBulletCount)
+{
+	//0<=weaponIndex<weaponCount
+	LeftBulletCount = 0;
+	TotalBulletCount = 30;
+	//this->GetInstanceComponents().FindItemByClass<UTP_WeaponComponent>();
+	int WeaponCount = this->GetInstanceComponents().Num();
+	if (weaponIndex < 0 || weaponIndex >= WeaponCount) {
+		return false;
+	}
+	int startIndex = 0;
+	int Index = 0;
+	for (int i = 0; i <= weaponIndex; i++) {
+		//find i-th weapon
+		UTP_WeaponComponent* thisWeapon = nullptr;
+		bool BIsFindIthWeapon = this->GetInstanceComponents().FindItemByClass<UTP_WeaponComponent>(&thisWeapon, &Index, startIndex);
+		if (BIsFindIthWeapon) {
+			startIndex = Index + 1;
+			if (i == weaponIndex) {
+				//找到了第weaponIndex个武器
+				LeftBulletCount = thisWeapon->GetCurBulletCount();
+				TotalBulletCount = thisWeapon->GetTotalBulletCount();
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 //void Ahomework2Character::GotWeapon()

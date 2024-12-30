@@ -9,7 +9,8 @@
 UENUM()
 enum class E_TargetTag:uint8
 {
-	NORMALTARGET,IMPORTANTTARGET_1
+	NORMALTARGET,IMPORTANTTARGET_1,WRONGTARGET
+	//»÷ÖÐWrongTarget»á¼õÉÙ10µÎHP
 };
 
 UCLASS()
