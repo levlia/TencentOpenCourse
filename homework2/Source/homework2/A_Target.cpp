@@ -35,3 +35,44 @@ void AA_Target::Tick(float DeltaTime)
 
 }
 
+void AA_Target::ShotByBullet(FBulletInfo Bullet)
+{
+
+	float HPLost = Bullet.BulletDamage;
+	if (HP - HPLost >= 0) {
+		HP -= HPLost;
+	}
+	else {
+		HP = 0;
+	}
+	if (!B_HasBeenShot) {
+		//SetWorldScale3D(FVector3d(F_HitScale_Y, F_HitScale_Y, F_HitScale_Y));
+		B_HasBeenShot = true;
+		/*FVector2D MovementVector = FVector2D(1.0, 1.0);
+		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+		AddMovementInput(GetActorRightVector(), MovementVector.X);*/
+		TArray<USkeletalMeshComponent*> TargetSkeletalMeshComponents;
+		this->GetComponents(TargetSkeletalMeshComponents);
+		int SkeletalMeshCount = TargetSkeletalMeshComponents.Num();
+		for (int i = 0; i < SkeletalMeshCount; i++) {
+
+			TargetSkeletalMeshComponents[i]->AddImpulseAtLocation(Bullet.BulletVeloc * Bullet.BulletMass, Bullet.BulletHitLocation);
+
+		}
+	}
+	else {
+		TArray<USkeletalMeshComponent*> TargetSkeletalMeshComponents;
+		this->GetComponents(TargetSkeletalMeshComponents);
+		int SkeletalMeshCount = TargetSkeletalMeshComponents.Num();
+		for (int i = 0; i < SkeletalMeshCount; i++) {
+			TargetSkeletalMeshComponents[i]->AddImpulseAtLocation(Bullet.BulletVeloc * Bullet.BulletMass, Bullet.BulletHitLocation);
+			//TargetSkeletalMeshComponents[i]->IsPhysicsCollisionEnabled();
+			//TargetSkeletalMeshComponents[i]->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
+		}
+
+		this->Destroy();
+	}
+
+
+}
+

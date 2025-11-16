@@ -34,9 +34,15 @@ Ahomework2Projectile::Ahomework2Projectile()
 void Ahomework2Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) ) //&& OtherComp->IsSimulatingPhysics()
+	if ((OtherActor != nullptr) && (OtherActor != this) 
+		&& (OtherComp != nullptr)
+		&&OtherComp->ComponentHasTag("CanReactBulletHit")) //&& OtherComp->IsSimulatingPhysics()
+		//更改为：具有CanReactBulletHit Tag标签的物体才能对子弹射击产生反应
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		//OtherComp->AddImpulseAtLocation(GetVelocity() * mBulletMass, GetActorLocation());
+		//OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		//添加冲量: 大小为质量乘以速度 该工作交给被击中的Character自身来做
+		//通过 ShotByBullet function调用
 		if (OtherComp->GetOwner()->GetClass()->IsChildOf(AA_Target::StaticClass())) {
 			//if this class is target class
 			AA_Target* A_ThisTarget = Cast<AA_Target>(OtherComp->GetOwner());
@@ -53,14 +59,13 @@ void Ahomework2Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActo
 			FuncBulletShotBPEvent();
 
 			float ScaleSize = Character->F_HitScale_Y;
+			FBulletInfo bulletInfo;
+			bulletInfo.BulletDamage = 50;
+			bulletInfo.BulletHitLocation = GetActorLocation();
+			bulletInfo.BulletVeloc = GetVelocity();
+			bulletInfo.BulletMass = mBulletMass;
 
-			if (!A_ThisTarget->B_HasBeenShot) {
-				OtherComp->SetWorldScale3D(FVector3d(ScaleSize, ScaleSize, ScaleSize));
-				A_ThisTarget->B_HasBeenShot = true;
-			}
-			else {
-				A_ThisTarget->Destroy();
-			}
+			A_ThisTarget->ShotByBullet(bulletInfo);
 
 		}
 

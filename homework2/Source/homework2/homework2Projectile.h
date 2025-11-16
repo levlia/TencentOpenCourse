@@ -46,5 +46,6 @@ public:
 
 private:
 	Ahomework2Character* Character;
+	float mBulletMass = 0.01;//10g÷ÿ¡ø
 };
 
